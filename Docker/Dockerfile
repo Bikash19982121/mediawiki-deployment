@@ -22,7 +22,6 @@ RUN tar -xvzf /tmp/mediawiki-*.tar.gz
 RUN mkdir /var/lib/mediawiki
 RUN mv mediawiki-*/* /var/lib/mediawiki
 
-COPY LocalSettings.php /var/www/html/mediawiki/
 
 # Create symbolic link for MediaWiki in Apache's HTML directory
 RUN ln -s /var/lib/mediawiki /var/www/html/mediawiki
