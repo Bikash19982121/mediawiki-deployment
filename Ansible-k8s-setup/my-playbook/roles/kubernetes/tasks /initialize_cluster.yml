@@ -1,0 +1,31 @@
+- name: Pull Kubernetes images
+  command: kubeadm config images pull
+  ignore_errors: yes
+  
+- name: Create repo directory
+  become: true
+  file:
+    path: /ansible/repo
+    state: directory
+    mode: '0400'
+  
+
+- name: Initialize Kubernetes master node
+  become: true
+  command: kubeadm init
+  register: kubeadm_output
+
+- name: Extract token and cert hash from kubeadm output
+  set_fact:
+    master_address: "{{ kubeadm_output.stdout_lines[-2].split()[-4] }}"
+    token: "{{ kubeadm_output.stdout_lines[-2].split()[-2] }}"
+    cert_hash: "{{ kubeadm_output.stdout_lines[-1].split()[-1] }}"
+    
+- name: Save join command to file
+  become: true
+  copy:
+    dest: /ansible/repo/kubeadm-join-command.sh
+    content: |
+      #!/bin/bash
+      kubeadm join {{ master_address }} --token {{ token }} --discovery-token-ca-cert-hash {{ cert_hash }}
+  
