@@ -1,0 +1,3 @@
+- name: Apply Weave Net CNI manifest
+  become: true
+  command: "kubectl apply -f {{weave_net_manifest_url}}"
